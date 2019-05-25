@@ -19,8 +19,6 @@ RUN python3.7 -m pip install pip
 COPY ./requirements.txt /server/requirements.txt
 WORKDIR /server
 RUN python3.7 -m pip install -r requirements.txt
-# TODO: find out pip install isn't installing all of the modules
-# RUN pip3 install -r requirements.txt
 
 COPY . /server
 
