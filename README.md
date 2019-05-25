@@ -21,3 +21,8 @@ To open a bash terminal into the docker container:
 ```
 
 Now the API is live at `localhost:5000/api`.
+
+To test a specific endpoint, consider using `curl`:
+```shell
+curl -i -H "Content-Type: application/json" -X POST -d '{"text":"Newspapers are published in many languages. They may be dailies, published every day, or weeklies, published each week. Printed on newsprint, newspapers contain news and views on varied topics. The news published may be on politics, economy, society, business, science, sports and entertainment from around the world. Newspaper publishers hire journalists as reporters and correspondents to write for them. Editors work with a team at newspaper offices to edit stories before they are published in the papers."}' http://localhost:5000/api/summarize
+````
