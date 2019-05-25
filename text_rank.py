@@ -73,5 +73,8 @@ def summarize(input_text):
     ranked_sentences = sorted(((scores[i],s) for i,s in enumerate(sentences)), reverse=True)
 
     # Extract top 5 sentences as the summary
+    top_sentences = []
     for i in range(5):
-        print(re.sub(r'[^\x00-\x7f]',r'', ranked_sentences[i][1]))
+        top_sentences.append(re.sub(r'[^\x00-\x7f]',r'', ranked_sentences[i][1]))
+    
+    return top_sentences
