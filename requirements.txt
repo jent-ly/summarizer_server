@@ -1,1 +1,6 @@
 flask>=1.0.2
+numpy
+nltk
+pandas
+sklearn
+networkx
