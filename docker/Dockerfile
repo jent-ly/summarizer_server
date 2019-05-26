@@ -1,10 +1,16 @@
 FROM ubuntu:18.04
 
 RUN apt-get update -y && \
-    apt-get install -y software-properties-common && \
+    apt-get install -y software-properties-common wget unzip && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update -y && \
     apt-get install -y python3.7 python3-pip
+
+RUN mkdir /data
+
+RUN wget -P /data http://nlp.stanford.edu/data/glove.6B.zip
+
+RUN unzip /data/glove*.zip -d /data
 
 RUN python3.7 -m pip install pip
 

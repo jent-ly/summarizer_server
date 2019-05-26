@@ -1,0 +1,8 @@
+docker
+sample*
+docker-compose.*
+README.md
+.dockerignore
+.gitignore
+.vscode
+.git
