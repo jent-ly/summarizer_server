@@ -4,3 +4,4 @@ nltk
 pandas
 sklearn
 networkx
+black
