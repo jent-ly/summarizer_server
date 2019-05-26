@@ -8,7 +8,7 @@ RUN apt-get update -y && \
 
 RUN mkdir /data
 
-RUN wget -P /data http://nlp.stanford.edu/data/glove.6B.zip
+RUN wget -P /data http://nlp.stanford.edu/data/glove.6B.zip -q
 
 RUN unzip /data/glove*.zip -d /data
 

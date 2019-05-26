@@ -6,7 +6,7 @@ services:
 before_install:
   - docker-compose up -d --build api
   - docker ps -a
-  - docker exec summarizer-server sh -c "cd /server && black --check ."
+  - docker exec summarizer-server sh -c "cd /server && pip3 install black && black --check ."
 
 script:
   - black --check .
