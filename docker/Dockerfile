@@ -1,12 +1,10 @@
 FROM ubuntu:18.04
 
 RUN apt-get update -y && \
-    apt-get install -y software-properties-common && \
+    apt-get install -y software-properties-common wget unzip && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update -y && \
-    apt-get install -y python3.7 python3-pip && \
-    apt-get update -y && \
-    apt-get install -y wget unzip
+    apt-get install -y python3.7 python3-pip
 
 RUN mkdir /data
 
