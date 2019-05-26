@@ -13,7 +13,7 @@ Using `docker-compose`:
 [~/summarizer-server] $ docker-compose up -d --build api
 ```
 
-Note, if a mounted volume is needed then uncomment the commented out portions of the `docker-compose.override.yml` file.
+Note, if a mounted volume is needed then uncomment the commented out portions of the `docker-compose.override.yml` file. *Changes to this file should NOT be pushed, which is why it's in the `.gitignore`.*
 
 To open a bash terminal into the docker container:
 ```shell
