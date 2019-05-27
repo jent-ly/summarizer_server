@@ -1,5 +1,7 @@
 # summarizer-server
 
+[![Build Status](https://travis-ci.com/jent-ly/summarizer-server.svg?branch=master)](https://travis-ci.com/jent-ly/summarizer-server)
+
 ## Development setup
 
 Using `docker`:
