@@ -1,14 +1,19 @@
+import pickle
+import os
+import re
+
+import networkx as nx
+import nltk
 import numpy as np
 import pandas as pd
-import nltk
 from nltk import tokenize
 from nltk import corpus
 from sklearn.metrics.pairwise import cosine_similarity
-import networkx as nx
-import re
+
+WORD_EMBEDDINGS_FILE = "/data/word_embeddings.pickle"
 
 word_embeddings = {}
-stop_words = []
+stop_words = set()
 
 
 def setup():
@@ -16,15 +21,30 @@ def setup():
     nltk.download("stopwords")
 
     # TODO: consider how to handle languages other than English
-    stop_words = corpus.stopwords.words("english")
+    stop_words = set(corpus.stopwords.words("english"))
+    process_word_embeddings()
 
-    f = open("/data/glove.6B.100d.txt", encoding="utf-8")
-    for line in f:
-        values = line.split()
-        word = values[0]
-        coefs = np.asarray(values[1:], dtype="float32")
-        word_embeddings[word] = coefs
-    f.close()
+    with open(WORD_EMBEDDINGS_FILE, "rb") as handle:
+        word_embeddings = pickle.load(handle)
+
+
+# This should be run from the Dockerfile
+def process_word_embeddings():
+    if (
+        os.path.exists(WORD_EMBEDDINGS_FILE)
+        and os.path.getsize(WORD_EMBEDDINGS_FILE) > 0
+    ):
+        return
+
+    with open("/data/glove.6B.100d.txt", "r", encoding="utf-8") as file:
+        for line in file:
+            values = line.split()
+            word = values[0]
+            coefs = np.asarray(values[1:], dtype="float32")
+            word_embeddings[word] = coefs
+
+    with open(WORD_EMBEDDINGS_FILE, "wb") as handle:
+        pickle.dump(word_embeddings, handle)
 
 
 def remove_stopwords(sen):
@@ -75,7 +95,7 @@ def summarize(input_text):
 
     # Extract top 5 sentences as the summary
     top_sentences = []
-    for i in range(5):
+    for i in range(min(5, len(ranked_sentences))):
         top_sentences.append(re.sub(r"[^\x00-\x7f]", r"", ranked_sentences[i][1]))
 
     return top_sentences
