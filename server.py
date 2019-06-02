@@ -27,4 +27,4 @@ def summarize():
     if not request.is_json:
         abort(400)
     request_payload = request.get_json()
-    return "".join(text_rank.summarize(request_payload["text"]))
+    return json.dumps(text_rank.summarize(request_payload["text"]))
