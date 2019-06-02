@@ -34,7 +34,7 @@ def setup_local_data():
     ):
         return
 
-    with open("/data/glove.6B.100d.txt", "r", encoding="utf-8") as file:
+    with open("/data/glove.6B.300d.txt", "r", encoding="utf-8") as file:
         for line in file:
             values = line.split()
             word = values[0]
