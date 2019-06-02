@@ -17,19 +17,17 @@ stop_words = set()
 
 
 def setup():
-    nltk.download("punkt")
-    nltk.download("stopwords")
-
     # TODO: consider how to handle languages other than English
     stop_words = set(corpus.stopwords.words("english"))
-    process_word_embeddings()
-
     with open(WORD_EMBEDDINGS_FILE, "rb") as handle:
         word_embeddings = pickle.load(handle)
 
 
 # This should be run from the Dockerfile
-def process_word_embeddings():
+def setup_local_data():
+    nltk.download("punkt")
+    nltk.download("stopwords")
+
     if (
         os.path.exists(WORD_EMBEDDINGS_FILE)
         and os.path.getsize(WORD_EMBEDDINGS_FILE) > 0

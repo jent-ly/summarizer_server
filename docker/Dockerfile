@@ -20,7 +20,7 @@ RUN python3.7 -m pip install -r requirements.txt
 
 COPY . /server
 
-RUN python3.7 -c "import text_rank; text_rank.process_word_embeddings()"
+RUN python3.7 -c "import text_rank; text_rank.setup_local_data()"
 
 ENV FLASK_APP=server.py
 CMD ["flask", "run", "--host=0.0.0.0"]
