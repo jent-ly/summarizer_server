@@ -16,13 +16,17 @@ RUN unzip /data/glove*.zip -d /data && \
 
 RUN python3.7 -m pip install pip
 
-COPY ./requirements.txt /server/requirements.txt
 WORKDIR /server
+
+# Python package dependencies
+COPY ./requirements.txt /server/requirements.txt
 RUN python3.7 -m pip install -r requirements.txt
 
-COPY . /server
+# Set up local data
+COPY ./image_setup.py /server/image_setup.py
+RUN python3.7 -c "import image_setup; image_setup.setup_local_data()"
 
-RUN python3.7 -c "import text_rank; text_rank.setup_local_data()"
+COPY . /server
 
 # ENV FLASK_APP=server.py
 CMD ["python3.7", "server.py"]

@@ -9,8 +9,7 @@ import pandas as pd
 from nltk import tokenize
 from nltk import corpus
 from sklearn.metrics.pairwise import cosine_similarity
-
-WORD_EMBEDDINGS_FILE = "/data/word_embeddings.pickle"
+from image_setup import WORD_EMBEDDINGS_FILE
 
 word_embeddings = {}
 stop_words = set()
@@ -21,28 +20,6 @@ def setup():
     stop_words = set(corpus.stopwords.words("english"))
     with open(WORD_EMBEDDINGS_FILE, "rb") as handle:
         word_embeddings = pickle.load(handle)
-
-
-# This should be run from the Dockerfile
-def setup_local_data():
-    nltk.download("punkt")
-    nltk.download("stopwords")
-
-    if (
-        os.path.exists(WORD_EMBEDDINGS_FILE)
-        and os.path.getsize(WORD_EMBEDDINGS_FILE) > 0
-    ):
-        return
-
-    with open("/data/glove.6B.300d.txt", "r", encoding="utf-8") as file:
-        for line in file:
-            values = line.split()
-            word = values[0]
-            coefs = np.asarray(values[1:], dtype="float32")
-            word_embeddings[word] = coefs
-
-    with open(WORD_EMBEDDINGS_FILE, "wb") as handle:
-        pickle.dump(word_embeddings, handle)
 
 
 def remove_stopwords(sen):
