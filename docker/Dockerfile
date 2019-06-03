@@ -24,5 +24,5 @@ COPY . /server
 
 RUN python3.7 -c "import text_rank; text_rank.setup_local_data()"
 
-ENV FLASK_APP=server.py
-CMD ["flask", "run", "--host=0.0.0.0"]
+# ENV FLASK_APP=server.py
+CMD ["python3.7", "server.py"]

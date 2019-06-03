@@ -1,9 +1,11 @@
-from flask import Flask, abort, request
 import json
+import os
+
+from flask import Flask, abort, request
+import text_rank
 
 app = Flask(__name__)
 
-import text_rank
 
 
 @app.before_first_request
@@ -28,3 +30,7 @@ def summarize():
         abort(400)
     request_payload = request.get_json()
     return json.dumps(text_rank.summarize(request_payload["text"]))
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
