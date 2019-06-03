@@ -7,7 +7,6 @@ import text_rank
 app = Flask(__name__)
 
 
-
 @app.before_first_request
 def before_first_request():
     text_rank.setup()
