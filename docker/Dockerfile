@@ -16,13 +16,20 @@ RUN unzip /data/glove*.zip -d /data && \
 
 RUN python3.7 -m pip install pip
 
-COPY ./requirements.txt /server/requirements.txt
 WORKDIR /server
+
+# Python package dependencies
+COPY ./requirements.txt /server/requirements.txt
 RUN python3.7 -m pip install -r requirements.txt
+
+# Set up local data
+# The symlink has to be made because for some reason when the container is run
+# in google cloud run, nltk checks for data at /home/nltk_data. When the
+# container is run locally, it checks /root/nltk_data.
+COPY ./image_setup.py /server/image_setup.py
+RUN python3.7 -c "import image_setup; image_setup.setup_local_data()" && \
+    ln -s /root/nltk_data /home/nltk_data
 
 COPY . /server
 
-RUN python3.7 -c "import text_rank; text_rank.setup_local_data()"
-
-ENV FLASK_APP=server.py
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["python3.7", "server.py"]
