@@ -65,12 +65,12 @@ def summarize(input_text):
     scores = nx.pagerank(nx_graph)
 
     ranked_sentences = sorted(
-        ((scores[i], s) for i, s in enumerate(sentences)), reverse=True
+        ((scores[i], i) for i, _ in enumerate(sentences)), reverse=True
     )
 
     # Extract top 5 sentences as the summary
     top_sentences = []
     for i in range(min(5, len(ranked_sentences))):
-        top_sentences.append(re.sub(r"[^\x00-\x7f]", r"", ranked_sentences[i][1]))
+        top_sentences.append(sentences[ranked_sentences[i][1]])
 
     return top_sentences
