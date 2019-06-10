@@ -6,7 +6,7 @@
 
 Using `docker`:
 ```shell
-[~/summarizer-server] $ docker build -t summarizer-server ./docker/Dockerfile
+[~/summarizer-server] $ docker build -t summarizer-server ./docker
 [~/summarizer-server] $ docker run --rm -p 5000:5000 summarizer-server
 ```
 
