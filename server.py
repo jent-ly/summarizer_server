@@ -2,14 +2,15 @@ import json
 import os
 
 from flask import Flask, abort, request
-import text_rank
+from text_rank import TextRank
 
 app = Flask(__name__)
+textrank = TextRank()
 
 
 @app.before_first_request
 def before_first_request():
-    text_rank.setup()
+    textrank.setup()
 
 
 @app.route("/api/")
@@ -28,8 +29,9 @@ def summarize():
     if not request.is_json:
         abort(400)
     request_payload = request.get_json()
-    return json.dumps(text_rank.summarize(request_payload["text"]))
+    top_sentences = textrank.summarize(request_payload["text"])
+    return json.dumps(top_sentences)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(host="0.0.0.0", debug=False, port=int(os.environ.get("PORT", 5000)))
