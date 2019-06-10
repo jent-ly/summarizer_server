@@ -2,8 +2,8 @@ version: "3"
 
 services:
   api:
-    image: summarizer-server
-    container_name: summarizer-server
+    image: summarizer_server
+    container_name: summarizer_server
     build:
       context: ./
       dockerfile: ./docker/Dockerfile
