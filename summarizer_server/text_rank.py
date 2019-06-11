@@ -14,7 +14,6 @@ from summarizer_server.image_setup import WORD_EMBEDDINGS_FILE
 
 class TextRank:
     def __init__(self):
-        self.DEFAULT_NUM_SENTENCES = 5
         self.word_embeddings = {}
         self.stop_words = set()
 
@@ -31,7 +30,7 @@ class TextRank:
     # Implemented following:
     #     https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
     def summarize(self, input_text, percent_sentences):
-        if percent_sentences is None:
+        if percent_sentences is None or percent_sentences > 100 or precent_senteces < 0:
             percent_sentences = 15
 
         sentences = tokenize.sent_tokenize(input_text)
