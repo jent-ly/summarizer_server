@@ -1,6 +1,6 @@
 # summarizer-server
 
-[![Build Status](https://travis-ci.com/jent-ly/summarizer-server.svg?branch=master)](https://travis-ci.com/jent-ly/summarizer-server)
+[![Build Status](https://travis-ci.com/jent-ly/summarizer_server.svg?branch=master)](https://travis-ci.com/jent-ly/summarizer_server)
 
 ## Development setup
 
