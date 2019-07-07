@@ -10,6 +10,7 @@ import pandas as pd
 from nltk import tokenize
 from nltk import corpus
 from sklearn.metrics.pairwise import cosine_similarity
+from newspaper import Article
 from image_setup import WORD_EMBEDDINGS_FILE
 from newspaper import Article
 
