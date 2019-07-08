@@ -33,22 +33,19 @@ class TextRank:
 
     # Implemented following:
     #     https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
-<<<<<<< HEAD:summarizer_server/text_rank.py
-    def summarize(self, input_text, percent_sentences):
+    def summarize(self, html, percent_sentences):
         if (
             percent_sentences is None
             or percent_sentences > 100
             or percent_sentences < 0
         ):
             percent_sentences = 15
-=======
-    def summarize(self, url):
+
         # fetch page content and parse html using newspaper
-        article = Article(url=url)
-        article.download()
+        article = Article(url=None)
+        article.set_html(html)
         article.parse()
         input_text = article.text
->>>>>>> use newspaper3k for parsing:text_rank.py
 
         sentences = tokenize.sent_tokenize(input_text)
 
