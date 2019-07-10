@@ -4,13 +4,11 @@ import os
 import sys
 
 from flask import Flask, abort, request
-from flask_cors import CORS
 from text_rank import TextRank
 
 log = logging.getLogger("summarizer_server")
 app = Flask(__name__)
-CORS(app)
-textrank = TextRank()
+textrank = TextRank(app.logger)
 
 debug = os.environ.get("DEBUG", "false").lower() == "true"
 
@@ -33,12 +31,16 @@ def extract():
 
 @app.route("/api/summarize", methods=["POST"])
 def summarize():
+    log.debug("Received request")
     if not request.is_json:
         abort(400)
+    log.debug("Request is JSON")
     request_payload = request.get_json()
+    log.debug("Summarizing")
     top_sentences = textrank.summarize(
-        request_payload["html"], request_payload["percent_sentences"]
+        request_payload["html"], request_payload.get("percent_sentences")
     )
+    log.debug("Dumping")
     response = json.dumps(top_sentences)
     return response
 
@@ -65,3 +67,4 @@ def configure_logger(debug):
 if __name__ == "__main__":
     configure_logger(debug)
     app.run(host="0.0.0.0", debug=debug, port=int(os.environ.get("PORT", 5000)))
+

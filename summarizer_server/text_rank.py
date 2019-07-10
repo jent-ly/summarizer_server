@@ -17,7 +17,8 @@ log = logging.getLogger("summarizer_server")
 
 
 class TextRank:
-    def __init__(self):
+    def __init__(self, logger = None):
+        self.logger = logger
         self.word_embeddings = {}
         self.stop_words = set()
 
@@ -31,6 +32,15 @@ class TextRank:
         sen_new = " ".join([i for i in sen if i not in self.stop_words])
         return sen_new
 
+    def process_html(self, html):
+        # fetch page content and parse html using newspaper
+        article = Article(url="")
+        article.set_html(html)
+        article.parse()
+
+        return article.text
+
+
     # Implemented following:
     #     https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
     def summarize(self, html, percent_sentences):
@@ -41,11 +51,7 @@ class TextRank:
         ):
             percent_sentences = 15
 
-        # fetch page content and parse html using newspaper
-        article = Article(url=None)
-        article.set_html(html)
-        article.parse()
-        input_text = article.text
+        input_text = self.process_html(html)
 
         sentences = tokenize.sent_tokenize(input_text)
 
