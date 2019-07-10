@@ -4,15 +4,20 @@
 
 ## Development setup
 
+Using `docker-compose` (*recommended*):
+```shell
+[~/summarizer-server] $ docker-compose up -d --build api
+```
+
+To use a different port or to run with debug logging:
+```shell
+[~/summarizer-server] $ PORT=4000 DEBUG=true docker-compose up -d --build api
+```
+
 Using `docker`:
 ```shell
 [~/summarizer-server] $ docker build -t summarizer-server ./docker
 [~/summarizer-server] $ docker run --rm -p 5000:5000 summarizer-server
-```
-
-Using `docker-compose`:
-```shell
-[~/summarizer-server] $ docker-compose up -d --build api
 ```
 
 Note, if a mounted volume is needed then uncomment the commented out portions of the `docker-compose.override.yml` file. *Changes to this file should NOT be pushed, which is why it's in the `.gitignore`.*

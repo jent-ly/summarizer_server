@@ -10,11 +10,7 @@ log = logging.getLogger("summarizer_server")
 app = Flask(__name__)
 textrank = TextRank()
 
-""" Change this to True to debug. I tried to read from env vars like
-`DEBUG=true docker-compose up` but that wasn't working.
-"""
-debug = False
-#  debug = True
+debug = os.environ.get("DEBUG", "false").lower() == "true"
 
 
 @app.before_first_request
