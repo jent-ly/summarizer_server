@@ -9,7 +9,7 @@ import pandas as pd
 from nltk import tokenize
 from nltk import corpus
 from sklearn.metrics.pairwise import cosine_similarity
-from image_setup import WORD_EMBEDDINGS_FILE
+from summarizer_server.image_setup import WORD_EMBEDDINGS_FILE
 
 
 class TextRank:
@@ -29,7 +29,10 @@ class TextRank:
 
     # Implemented following:
     #     https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
-    def summarize(self, input_text):
+    def summarize(self, input_text, percent_sentences):
+        if percent_sentences is None or percent_sentences > 100 or precent_senteces < 0:
+            percent_sentences = 15
+
         sentences = tokenize.sent_tokenize(input_text)
 
         # remove punctuations, numbers and special characters
@@ -70,7 +73,7 @@ class TextRank:
 
         # Extract top 15% of sentences
         top_sentences = []
-        for i in range(int(len(clean_sentences) * 0.15)):
+        for i in range(int(len(clean_sentences) * percent_sentences / 100)):
             top_sentences.append(sentences[ranked_sentences[i][1]])
 
         return top_sentences

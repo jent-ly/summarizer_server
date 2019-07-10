@@ -29,7 +29,9 @@ def summarize():
     if not request.is_json:
         abort(400)
     request_payload = request.get_json()
-    top_sentences = textrank.summarize(request_payload["text"])
+    top_sentences = textrank.summarize(
+        request_payload["text"], request_payload["percent_sentences"]
+    )
     return json.dumps(top_sentences)
 
 
