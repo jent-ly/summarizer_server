@@ -3,7 +3,9 @@ language: python
 python:
   - "3.7"
 
-install: make install
+install:
+  - make install
+  - python3.7 -c "import nltk; nltk.download('punkt')"
 
 script:
   - black --check .
