@@ -1,6 +1,5 @@
 black
 flask>=1.0.2
-flask-cors
 ipython
 networkx
 nltk
