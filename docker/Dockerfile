@@ -34,5 +34,5 @@ RUN python3.7 -c "import summarizer_server.image_setup; summarizer_server.image_
 
 COPY . /server
 
-CMD ["python3.7", "server.py"]
+CMD ["python3.7", "summarizer_server/server.py"]
 
