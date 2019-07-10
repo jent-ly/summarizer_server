@@ -31,16 +31,12 @@ def extract():
 
 @app.route("/api/summarize", methods=["POST"])
 def summarize():
-    log.debug("Received request")
     if not request.is_json:
         abort(400)
-    log.debug("Request is JSON")
     request_payload = request.get_json()
-    log.debug("Summarizing")
     top_sentences = textrank.summarize(
         request_payload["html"], request_payload.get("percent_sentences")
     )
-    log.debug("Dumping")
     response = json.dumps(top_sentences)
     return response
 
