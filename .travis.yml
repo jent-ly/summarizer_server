@@ -5,6 +5,7 @@ python:
 
 install:
   - make install
+  # need to run this because we're not running image_setup
   - python3.7 -c "import nltk; nltk.download('punkt')"
 
 script:
