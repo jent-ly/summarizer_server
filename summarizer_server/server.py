@@ -47,7 +47,9 @@ def configure_logger(debug):
 
     # Configure logger and remove default flask logging
     handler = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     handler.setFormatter(formatter)
     handler.setLevel(log_level)
     logging.getLogger().addHandler(handler)
