@@ -30,7 +30,11 @@ class TextRank:
     # Implemented following:
     #     https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
     def summarize(self, input_text, percent_sentences):
-        if percent_sentences is None or percent_sentences > 100 or percent_sentences < 0:
+        if (
+            percent_sentences is None
+            or percent_sentences > 100
+            or percent_sentences < 0
+        ):
             percent_sentences = 15
 
         sentences = tokenize.sent_tokenize(input_text)
