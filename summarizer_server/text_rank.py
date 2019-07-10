@@ -18,7 +18,7 @@ log = logging.getLogger("summarizer_server")
 
 
 class TextRank:
-    def __init__(self, logger = None):
+    def __init__(self, logger=None):
         self.logger = logger
         self.word_embeddings = {}
         self.stop_words = set()
@@ -40,7 +40,6 @@ class TextRank:
         article.parse()
 
         return article.text
-
 
     # Implemented following:
     #     https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
