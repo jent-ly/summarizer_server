@@ -1,3 +1,4 @@
+import logging
 import pickle
 import os
 import re
@@ -10,6 +11,8 @@ from nltk import tokenize
 from nltk import corpus
 from sklearn.metrics.pairwise import cosine_similarity
 from image_setup import WORD_EMBEDDINGS_FILE
+
+log = logging.getLogger("summarizer_server")
 
 
 class TextRank:
@@ -80,4 +83,5 @@ class TextRank:
         for i in range(int(len(clean_sentences) * percent_sentences / 100)):
             top_sentences.append(sentences[ranked_sentences[i][1]])
 
+        log.debug(f"Returning {len(top_sentences)} sentences")
         return top_sentences
