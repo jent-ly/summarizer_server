@@ -9,7 +9,7 @@ import pandas as pd
 from nltk import tokenize
 from nltk import corpus
 from sklearn.metrics.pairwise import cosine_similarity
-from summarizer_server.image_setup import WORD_EMBEDDINGS_FILE
+from image_setup import WORD_EMBEDDINGS_FILE
 
 
 class TextRank:
