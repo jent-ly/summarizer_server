@@ -6,3 +6,4 @@ nltk
 numpy
 pandas
 sklearn
+uwsgi
