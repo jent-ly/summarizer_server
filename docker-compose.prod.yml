@@ -2,33 +2,24 @@ version: "3"
 
 services:
   api:
-    image: summarizer_server
+    image: gcr.io/alpine-gasket-242504/summarizer-server:uwsgi
     container_name: summarizer_server
-    build:
-      context: ./
-      dockerfile: ./docker/Dockerfile
     ports:
       - "${PORT:-5000}:${PORT:-5000}"
     network_mode: "bridge"
     environment: # forward these from shell to the container at runtime
       - DEBUG
       - PORT
-      - JOBLIB_MULTIPROCESSING=0
+      - JOBLIB_MULTIPROCESSING=0 # this removes a uwsgi warning
     command: [
       "uwsgi",
       "--thunder-lock",
-      # "--uid", "uwsgi",
-      # "--protocol", "uwsgi",
       "--socket", ":5000",
       "--chmod-socket",
       "--chdir", "/server/summarizer_server",
       "--module", "server",
       "--master",
-      # "--wsgi-file", "summarizer_server/server.py",
       "--callable", "app",
-      # "--plugin", "python37",
-      # "--ini", "/server/summarizer_server/uwsgi.ini",
-      # "--enable-threads",
       "--processes", "2",
     ]
   nginx:
