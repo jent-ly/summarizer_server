@@ -8,7 +8,7 @@ from text_rank import TextRank
 
 log = logging.getLogger("summarizer_server")
 app = Flask(__name__)
-textrank = TextRank(app.logger)
+textrank = TextRank()
 
 debug = os.environ.get("DEBUG", "false").lower() == "true"
 
@@ -37,8 +37,7 @@ def summarize():
     top_sentences = textrank.summarize(
         request_payload["html"], request_payload.get("percent_sentences")
     )
-    response = json.dumps(top_sentences)
-    return response
+    return json.dumps(top_sentences)
 
 
 def configure_logger(debug):

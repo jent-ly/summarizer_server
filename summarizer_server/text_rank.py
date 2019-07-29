@@ -12,14 +12,12 @@ from nltk import corpus
 from sklearn.metrics.pairwise import cosine_similarity
 from newspaper import Article
 from image_setup import WORD_EMBEDDINGS_FILE
-from newspaper import Article
 
 log = logging.getLogger("summarizer_server")
 
 
 class TextRank:
-    def __init__(self, logger=None):
-        self.logger = logger
+    def __init__(self):
         self.word_embeddings = {}
         self.stop_words = set()
 
