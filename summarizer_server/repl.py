@@ -1,7 +1,8 @@
 import json
-import requests
-import sys
 import readline
+import requests
+import signal
+import sys
 import text_rank
 
 from enum import Enum
@@ -12,7 +13,12 @@ class OutputType(Enum):
     TEXT = 2
 
 
+def sigint_handler(signal, frame):
+    exit(0)
+
+
 output_type = OutputType.SUMMARY
+signal.signal(signal.SIGINT, sigint_handler)
 
 
 def handle_commands(command, response):
@@ -34,12 +40,12 @@ def handle_commands(command, response):
     else:
         print(
             """
-    usage:
-        <url>                                Outputs the summary for the article pointed to by the url
-        :set <key> <value>                   Sets the output type of the REPL. Valid keys are provided below
-            output [ summary | text ]        Sets the output type of the REPL
-        :debug                               Outputs debug logs for the last sent url
-        :[exit, quit, q]                     Exits the REPL
+usage:
+    <url>                                Outputs the summary for the article pointed to by the url
+    :set <key> <value>                   Sets the output type of the REPL. Valid keys are provided below
+        output [ summary | text ]        Sets the output type of the REPL
+    :debug                               Outputs debug logs for the last sent url
+    :[exit, quit, q]                     Exits the REPL
         """
         )
 
@@ -47,7 +53,10 @@ def handle_commands(command, response):
 if __name__ == "__main__":
     response = ""
     while True:
-        url = input("url> ")
+        try:
+            url = input("url> ")
+        except EOFError:
+            exit(0)
 
         if not url:
             continue
