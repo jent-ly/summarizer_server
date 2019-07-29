@@ -32,14 +32,16 @@ def handle_commands(command, response):
             print("Response Headers: ", response.headers)
             response.raise_for_status()
     else:
-        print("""
+        print(
+            """
     usage:
         <url>                                Outputs the summary for the article pointed to by the url
         :set <key> <value>                   Sets the output type of the REPL. Valid keys are provided below
             output [ summary | text ]        Sets the output type of the REPL
         :debug                               Outputs debug logs for the last sent url
         :[exit, quit, q]                     Exits the REPL
-        """)
+        """
+        )
 
 
 if __name__ == "__main__":
