@@ -6,3 +6,11 @@ nltk
 numpy
 pandas
 sklearn
+marshmallow
+SQLAlchemy
+Flask-SQLAlchemy
+marshmallow
+
+# Testing
+nose
+Flask-Testing
