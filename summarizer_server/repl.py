@@ -42,10 +42,10 @@ def handle_commands(command, response):
             """
 usage:
     <url>                                Outputs the summary for the article pointed to by the url
-    :set <key> <value>                   Sets the output type of the REPL. Valid keys are provided below
-        output [ summary | text ]        Sets the output type of the REPL
+    :set <key> <value>                   Changes the configuration of the summarizer:
+        output [ summary | text ]         - Sets the output type of the REPL
     :debug                               Outputs debug logs for the last sent url
-    :[exit, quit, q]                     Exits the REPL
+    :[exit | quit | q]                   Exits the REPL
         """
         )
 
