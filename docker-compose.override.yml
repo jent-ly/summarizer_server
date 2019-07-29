@@ -1,7 +1,0 @@
-# this file is for devs only
-version: "3"
-
-# services:
-#   api:
-#     volumes:
-#       - .:/server
