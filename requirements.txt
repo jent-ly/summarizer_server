@@ -8,3 +8,4 @@ pandas
 sklearn
 newspaper3k
 requests
+uwsgi
