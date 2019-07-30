@@ -1,13 +1,43 @@
 dist: xenial   # required for Python >= 3.7
-language: python
-python:
-  - "3.7"
 
-install:
-  - make install
-  # need to run this because we're not running image_setup
-  - python3.7 -c "import nltk; nltk.download('punkt')"
+stages:
+  - test
+  - name: build-push
+    if: branch = master AND type = push
 
-script:
-  - black --check .
-  - make test
+jobs:
+  include:
+    - stage: test
+      language: python
+      python: 3.7
+      install:
+        - make install
+        # need to run this because we're not running image_setup
+        - python3.7 -c "import nltk; nltk.download('punkt')"
+      script:
+        - black --check .
+        - make test
+    # Most of this job is taken from http://thylong.com/ci/2016/deploying-from-travis-to-gce/
+    - stage: build-push
+      cache:
+      directories:
+        - "$HOME/google-cloud-sdk/"
+      services: docker
+      install:
+        - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then
+            rm -rf $HOME/google-cloud-sdk;
+            curl -so $HOME/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-259.0.0-linux-x86_64.tar.gz;
+            tar -xzf $HOME/google-cloud-sdk.tar.gz -C $HOME;
+          fi
+        # Add gcloud to $PATH
+        - source $HOME/google-cloud-sdk/path.bash.inc
+        - gcloud version
+        # Auth flow
+        - echo $GCLOUD_KEY | base64 --decode > $HOME/gcloud-service-key.json
+        - gcloud auth activate-service-account $GCLOUD_EMAIL --key-file $HOME/gcloud-service-key.json
+      script:
+        # Docker build and push
+        - docker-compose build
+        - docker tag summarizer_server:latest gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis
+        - gcloud docker -- push gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis
+      
