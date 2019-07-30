@@ -4,10 +4,11 @@ import os
 import sys
 
 from flask import Flask, abort, request
-from text_rank import TextRank
-from serializers import FeedbackSchema
-from feedback_service import FeedbackService, Feedback, database
 from settings import Settings
+from models import database, Feedback, User
+from user_service import UserService
+from feedback_service import FeedbackService
+from text_rank import TextRank
 
 
 log = logging.getLogger("summarizer_server")
@@ -16,8 +17,10 @@ app = Flask(__name__)
 app.config.from_object(Settings)
 database.init_app(app)
 
-textrank = TextRank()
+userservice = UserService()
 feedbackservice = FeedbackService()
+textrank = TextRank()
+
 
 @app.before_first_request
 def before_first_request():
@@ -58,13 +61,27 @@ def submit_feedback():
     if url == "" or score == "":
         abort(400)
 
-    response = feedbackservice.submit(
-        url,
-        score,
-        request_payload.get("description", ""),
-        request_payload.get("email", ""),
-        request_payload.get("gaia", ""),
+    # create user if it does not yet exist
+    email = request_payload.get("email", "")
+    gaia = request_payload.get("gaia", "")
+
+    # check if user wishes to be anonymous
+    user = userservice.get_anonymous()
+    if email != "" and gaia != "":
+        user = userservice.get(email)
+
+    if user is None:
+        user = userservice.create(email, gaia)
+
+    feedback = feedbackservice.submit(
+        url, score, request_payload.get("description", ""), user.id
     )
+
+    response = {
+        "message": "Successfully saved feedback",
+        "feedback": feedbackservice.serialize_single(feedback),
+        "success": True,
+    }
     return json.dumps(response)
 
 
@@ -73,8 +90,27 @@ def submit_feedback():
 @app.route("/api/feedback/view", methods=["GET"])
 def view_feedback():
     # TODO: consider pagination
-    response = feedbackservice.get_all()
-    return json.dumps({"feedback": response})
+    all_feedback = feedbackservice.get_all()
+    response = {
+        "message": "Successfully got feedback",
+        "feedback": feedbackservice.serialize_multiple(all_feedback),
+        "success": True,
+    }
+    return json.dumps(response)
+
+
+# TODO: add user deletion
+# TODO: make certain routes internal only
+@app.route("/api/users/view", methods=["GET"])
+def view_users():
+    # TODO: consider pagination
+    all_users = userservice.get_all()
+    response = {
+        "message": "Successfully got users",
+        "feedback": userservice.serialize_multiple(all_users),
+        "success": True,
+    }
+    return json.dumps(response)
 
 
 def configure_logger(debug):
