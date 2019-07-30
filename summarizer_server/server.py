@@ -10,6 +10,7 @@ from user_service import UserService
 from feedback_service import FeedbackService
 from text_rank import TextRank
 
+debug = os.environ.get("DEBUG", "false").lower() == "true"
 
 log = logging.getLogger("summarizer_server")
 
@@ -61,7 +62,6 @@ def submit_feedback():
     if url == "" or score == "":
         abort(400)
 
-    # create user if it does not yet exist
     email = request_payload.get("email", "")
     gaia = request_payload.get("gaia", "")
 
@@ -70,6 +70,7 @@ def submit_feedback():
     if email != "" and gaia != "":
         user = userservice.get(email)
 
+    # create user if it does not yet exist
     if user is None:
         user = userservice.create(email, gaia)
 
@@ -78,7 +79,7 @@ def submit_feedback():
     )
 
     response = {
-        "message": "Successfully saved feedback",
+        "message": "Successfully submitted feedback",
         "feedback": feedbackservice.serialize_single(feedback),
         "success": True,
     }
@@ -99,7 +100,7 @@ def view_feedback():
     return json.dumps(response)
 
 
-# TODO: add user deletion
+# TODO: add user deletion and creation
 # TODO: make certain routes internal only
 @app.route("/api/users/view", methods=["GET"])
 def view_users():
@@ -107,7 +108,7 @@ def view_users():
     all_users = userservice.get_all()
     response = {
         "message": "Successfully got users",
-        "feedback": userservice.serialize_multiple(all_users),
+        "users": userservice.serialize_multiple(all_users),
         "success": True,
     }
     return json.dumps(response)
@@ -132,11 +133,8 @@ def configure_logger(debug):
     app.logger.propagate = True
 
 
-debug = os.environ.get("DEBUG", "false").lower() == "true"
-
-
 if __name__ == "__main__":
     configure_logger(debug)
     with app.app_context():
         database.create_all()
-    app.run(host="0.0.0.0", debug=False, port=int(os.environ.get("PORT", 5000)))
+    app.run(host="0.0.0.0", debug=debug, port=int(os.environ.get("PORT", 5000)))

@@ -1,17 +1,14 @@
-from datetime import datetime
-
 from models import database, User
 from serializers import UserSchema
 
 
 class UserService:
-    anonymous_email = "anonymous@jent.ly"
-    anonymous_gaia = "ewpewawn"
-
     def __init__(self):
+        self.anonymous_email = "anonymous@jent.ly"
+        self.anonymous_gaia = "ewpewawn"
+
         self.user_single = UserSchema()
         self.user_multiple = UserSchema(many=True)
-        self.anonymous_user = self.create(anonymous_email, anonymous_gaia)
 
     def serialize_single(self, user):
         return self.user_single.dump(user)
@@ -41,4 +38,4 @@ class UserService:
         return User.query.order_by(User.create_time.desc()).all()
 
     def get_anonymous(self):
-        return self.get(anonymous_email)
+        return self.create(self.anonymous_email, self.anonymous_gaia)

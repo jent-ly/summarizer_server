@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from models import database, Feedback, User
 from serializers import FeedbackSchema
 

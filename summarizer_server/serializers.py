@@ -13,4 +13,4 @@ class FeedbackSchema(Schema):
     score = fields.Integer()
     description = fields.Str()
     timestamp = fields.DateTime()
-    user = fields.Nested(UserSchema, allow_null=True)
+    user_id = fields.Integer()
