@@ -17,8 +17,9 @@ def sigint_handler(signal, frame):
     exit(0)
 
 
+DEFAULT_SERVER_LOCATION = "http://localhost:5000"
 output_type = OutputType.SUMMARY
-server_location = "http://localhost:5000"
+server_location = DEFAULT_SERVER_LOCATION
 signal.signal(signal.SIGINT, sigint_handler)
 
 
@@ -33,6 +34,10 @@ def handle_commands(command, response):
         if set_param == "output":
             output_type = OutputType[tokens[2].upper()]
         elif set_param == "server":
+            # no argument means go back to localhost
+            if len(tokens) == 2:
+                server_location = DEFAULT_SERVER_LOCATION
+                return
             server_location = tokens[2]
     elif command.startswith(":debug"):
         if not response:
@@ -48,7 +53,7 @@ usage:
     <url>                                Outputs the summary for the article pointed to by the url
     :set <key> <value>                   Changes the configuration of the summarizer:
         output [ summary | text ]         - Sets the output type of the REPL
-        server http[s]://<addr>[:port]    - Sets the location of the backend
+        server [http[s]://<addr>[:port]]  - Sets the location of the backend
     :debug                               Outputs debug logs for the last sent url
     :[exit | quit | q]                   Exits the REPL
         """
