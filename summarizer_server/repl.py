@@ -21,6 +21,11 @@ output_type = OutputType.SUMMARY
 signal.signal(signal.SIGINT, sigint_handler)
 
 
+def print_summary(summary):
+    for sentence in summary:
+        print(sentence)
+
+
 def handle_commands(command, response):
     global output_type
     if command == ":exit" or command == ":quit" or command == ":q":
@@ -73,7 +78,7 @@ if __name__ == "__main__":
             response = requests.post(
                 "http://localhost:5000/api/summarize", json={"html": html}
             )
-            print(response.content)
+            print_summary(json.loads(response.content))
         else:
             rank = text_rank.TextRank()
-            print(rank.process_html(html))
+            print(rank.process_html(html).text)

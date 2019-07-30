@@ -7,10 +7,13 @@ import networkx as nx
 import nltk
 import numpy as np
 import pandas as pd
+
+from collections import Counter
 from nltk import tokenize
 from nltk import corpus
 from sklearn.metrics.pairwise import cosine_similarity
 from newspaper import Article
+from newspaper import nlp
 from image_setup import WORD_EMBEDDINGS_FILE
 
 log = logging.getLogger("summarizer_server")
@@ -37,7 +40,11 @@ class TextRank:
         article.set_html(html)
         article.parse()
 
-        return article.text
+        return article
+
+    def normalize_scores(self, scores):
+        total = sum(scores.values())
+        return {key: score / total for key, score in scores.items()}
 
     # Implemented following:
     #     https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
@@ -49,9 +56,14 @@ class TextRank:
         ):
             percent_sentences = 15
 
-        input_text = self.process_html(html)
+        article = self.process_html(html)
 
-        sentences = tokenize.sent_tokenize(input_text)
+        # remove title from the text, if it appears in the text
+        if article.text.startswith(article.title):
+            article.set_text(article.text[len(article.title) :])
+
+        sentences = nlp.split_sentences(article.text)
+        log.debug(article.text)
 
         # remove punctuations, numbers and special characters
         clean_sentences = pd.Series(sentences).str.replace("[^a-zA-Z]", " ")
@@ -83,16 +95,38 @@ class TextRank:
 
         # convert matrix into graph
         nx_graph = nx.from_numpy_array(sim_mat)
-        scores = nx.pagerank(nx_graph)
+        textrank_scores = self.normalize_scores(nx.pagerank(nx_graph))
 
-        ranked_sentences = sorted(
-            ((scores[i], i) for i in range(len(sentences))), reverse=True
+        # get newspaper's nlp scores
+        # https://github.com/codelucas/newspaper/blob/master/newspaper/article.py#L372
+        nlp.load_stopwords(article.config.get_language())
+        text_keywords = list(nlp.keywords(article.text).keys())
+        title_keywords = list(nlp.keywords(article.title).keys())
+        keywords = list(set(title_keywords + text_keywords))
+
+        # call to: nlp.summarize(title=article.title, text=article.text, max_sents=max_sents)
+        # https://github.com/codelucas/newspaper/blob/master/newspaper/nlp.py#L40
+        title_words = nlp.split_words(article.title)
+        most_frequent = nlp.keywords(article.text)
+
+        nlp_scores = self.normalize_scores(
+            nlp.score(sentences, title_words, most_frequent)
         )
 
-        # Extract top 15% of sentences
-        top_sentences = []
-        for i in range(int(len(clean_sentences) * percent_sentences / 100)):
-            top_sentences.append(sentences[ranked_sentences[i][1]])
+        totalled_scores = Counter()
+        for key, value in nlp_scores.items():
+            totalled_scores[key[0]] += value
 
-        log.debug(f"Returning {len(top_sentences)} sentences")
-        return top_sentences
+        for key, value in textrank_scores.items():
+            totalled_scores[key] += value
+
+        num_sentences = int(len(clean_sentences) * percent_sentences / 100)
+        sentence_indices = list(
+            map(lambda x: x[0], totalled_scores.most_common(num_sentences))
+        )
+        log.info(sentence_indices)
+        log.info(sum(textrank_scores.values()))
+        log.info(sum(nlp_scores.values()))
+
+        log.info("Returning newspaper summary \n" + article.summary)
+        return list(map(lambda x: sentences[x], sentence_indices))
