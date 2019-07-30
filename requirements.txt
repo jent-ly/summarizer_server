@@ -6,6 +6,7 @@ nltk
 numpy
 pandas
 sklearn
+uwsgi
 SQLAlchemy
 Flask-SQLAlchemy
 marshmallow
