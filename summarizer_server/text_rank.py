@@ -100,9 +100,6 @@ class TextRank:
         # get newspaper's nlp scores
         # https://github.com/codelucas/newspaper/blob/master/newspaper/article.py#L372
         nlp.load_stopwords(article.config.get_language())
-        text_keywords = list(nlp.keywords(article.text).keys())
-        title_keywords = list(nlp.keywords(article.title).keys())
-        keywords = list(set(title_keywords + text_keywords))
 
         # call to: nlp.summarize(title=article.title, text=article.text, max_sents=max_sents)
         # https://github.com/codelucas/newspaper/blob/master/newspaper/nlp.py#L40
