@@ -124,9 +124,5 @@ class TextRank:
         sentence_indices = list(
             map(lambda x: x[0], totalled_scores.most_common(num_sentences))
         )
-        log.info(sentence_indices)
-        log.info(sum(textrank_scores.values()))
-        log.info(sum(nlp_scores.values()))
 
-        log.info("Returning newspaper summary \n" + article.summary)
         return list(map(lambda x: sentences[x], sentence_indices))
