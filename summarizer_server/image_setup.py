@@ -6,11 +6,19 @@ import numpy as np
 
 WORD_EMBEDDINGS_FILE = "/data/word_embeddings.pickle"
 
+REQUIRED_CORPORA = [
+    "brown",  # Required for FastNPExtractor
+    "punkt",  # Required for WordTokenizer
+    "maxent_treebank_pos_tagger",  # Required for NLTKTagger
+    "wordnet",  # Required for lemmatization and Wordnet
+    "stopwords",
+]
 
 # This should be run from the Dockerfile
 def setup_local_data():
-    nltk.download("punkt")
-    nltk.download("stopwords")
+    for corpus in REQUIRED_CORPORA:
+        print(('Downloading "{0}"'.format(corpus)))
+        nltk.download(corpus)
 
     if (
         os.path.exists(WORD_EMBEDDINGS_FILE)

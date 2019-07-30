@@ -12,4 +12,7 @@ install:
 test:
 	python3.7 -m unittest discover summarizer_server
 
-.PHONY: build run install test
+repl:
+	python3.7 summarizer_server/repl.py
+
+.PHONY: build run install test repl

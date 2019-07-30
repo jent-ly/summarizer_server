@@ -10,6 +10,7 @@ import pandas as pd
 from nltk import tokenize
 from nltk import corpus
 from sklearn.metrics.pairwise import cosine_similarity
+from newspaper import Article
 from image_setup import WORD_EMBEDDINGS_FILE
 
 log = logging.getLogger("summarizer_server")
@@ -30,15 +31,25 @@ class TextRank:
         sen_new = " ".join([i for i in sen if i not in self.stop_words])
         return sen_new
 
+    def process_html(self, html):
+        # fetch page content and parse html using newspaper
+        article = Article(url="")
+        article.set_html(html)
+        article.parse()
+
+        return article.text
+
     # Implemented following:
     #     https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
-    def summarize(self, input_text, percent_sentences):
+    def summarize(self, html, percent_sentences):
         if (
             percent_sentences is None
             or percent_sentences > 100
             or percent_sentences < 0
         ):
             percent_sentences = 15
+
+        input_text = self.process_html(html)
 
         sentences = tokenize.sent_tokenize(input_text)
 
