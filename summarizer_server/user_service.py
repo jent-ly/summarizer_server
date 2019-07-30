@@ -16,7 +16,7 @@ class UserService:
     def serialize_multiple(self, users):
         return self.user_multiple.dump(users)
 
-    def create(self, email, gaia):
+    def get_or_create(self, email, gaia):
         user = self.get(email)
         if user is not None:
             print("User <'email={0} gaia={1}'> already exists.".format(email, gaia))
@@ -38,4 +38,4 @@ class UserService:
         return User.query.order_by(User.create_time.desc()).all()
 
     def get_anonymous(self):
-        return self.create(self.anonymous_email, self.anonymous_gaia)
+        return self.get_or_create(self.anonymous_email, self.anonymous_gaia)

@@ -66,13 +66,14 @@ def submit_feedback():
     gaia = request_payload.get("gaia", "")
 
     # check if user wishes to be anonymous
-    user = userservice.get_anonymous()
     if email != "" and gaia != "":
         user = userservice.get(email)
+    else:
+        user = userservice.get_anonymous()
 
     # create user if it does not yet exist
     if user is None:
-        user = userservice.create(email, gaia)
+        user = userservice.get_or_create(email, gaia)
 
     feedback = feedbackservice.submit(
         url, score, request_payload.get("description", ""), user.id
