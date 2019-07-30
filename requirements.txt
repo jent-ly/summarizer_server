@@ -6,6 +6,8 @@ nltk
 numpy
 pandas
 sklearn
+newspaper3k
+requests
 uwsgi
 SQLAlchemy
 Flask-SQLAlchemy

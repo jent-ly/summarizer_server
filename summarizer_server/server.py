@@ -45,7 +45,7 @@ def summarize():
         abort(400)
     request_payload = request.get_json()
     top_sentences = textrank.summarize(
-        request_payload["text"], request_payload["percent_sentences"]
+        request_payload["html"], request_payload.get("percent_sentences")
     )
     return json.dumps(top_sentences)
 
