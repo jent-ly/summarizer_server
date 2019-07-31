@@ -2,7 +2,7 @@ version: "3"
 
 services:
   api:
-    image: gcr.io/alpine-gasket-242504/summarizer-server:uwsgi
+    image: gcr.io/alpine-gasket-242504/summarizer-server:latest
     container_name: summarizer_server
     ports:
       - "${PORT:-5000}:${PORT:-5000}"
