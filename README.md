@@ -4,32 +4,55 @@
 
 ## Development setup
 
-Using `docker-compose` (*recommended*):
+Clone the repository:
 ```shell
-[~/summarizer-server] $ docker-compose up -d --build api
+[~/workspace] $ git clone summarizer_server
+[~/workspace] $ cd summarizer_server
 ```
 
-To use a different port or to run with debug logging:
+Our development environment is hosted in a Docker development container. We support `make` commands, to build the container and its dependencies:
 ```shell
-[~/summarizer-server] $ PORT=4000 DEBUG=true docker-compose up -d --build api
+[~/workspace/summarizer-server] $ make build
 ```
 
-Using `docker`:
+Run the following command to start the server and attach it to the current terminal. The server by default is hosted on port 5000 with `debug mode: on`
 ```shell
-[~/summarizer-server] $ docker build -t summarizer-server ./docker
-[~/summarizer-server] $ docker run --rm -p 5000:5000 summarizer-server
+[~/workspace/summarizer-server] $ make run
 ```
 
-Note, if a mounted volume is needed then uncomment the commented out portions of the `docker-compose.override.yml` file. *Changes to this file should NOT be pushed, which is why it's in the `.gitignore`.*
+Use the REPL (Read-Eval-Print-Loop) to interactively send requests to the local and production server. By default the REPL accepts a link to an article and will return the summary of the article produced by the local server. To view a complete set of REPL configurations, type `:help` in the REPL instance.
+```shell
+[~/workspace/summarizer-server] $ make repl
+python3.7 summarizer_server/repl.py
+url> :help
+
+usage:
+    <url>                                Outputs the summary for the article pointed to by the url
+    :set <key> <value>                   Changes the configuration of the summarizer:
+        output [ summary | text ]         - Sets the output type of the REPL
+        server [http[s]://<addr>[:port]]  - Sets the location of the backend
+    :debug                               Outputs debug logs for the last sent url
+    :[exit | quit | q]                   Exits the REPL
+
+url> https://www.washingtonpost.com/business/economy/senate-passes-two-year-budget-and-debt-ceiling-bill-sending-to-trump/2019/08/01/5b57dd38-b3de-11e9-8949-5f36ff92706e_story.html?utm_term=.713f63bb3311
+But the Treasury Department can only issue debt up to a limit set by Congress, known as the debt ceiling.
+[The budget deal is good politics — but terrible policy]Trump had — before coming president — suggested that the debt ceiling shouldn’t be raised.
+If the debt ceiling is not lifted, the government could fall behind on some of its payments, which could spark another financial crisis.
+“Budget Deal is phenomenal for our Great Military, our Vets, and Jobs, Jobs, Jobs!
+The Senate passed a broad, two-year budget deal on Thursday that boosts spending and eliminates the threat of a debt default until after the 2020 election, while reducing the chances for another government shutdown.
+(J. Scott Applewhite/AP)The deal passed on Thursday suspends the debt ceiling through July 31, 2021, removing the threat of default and the accompanying risk of political brinkmanship that typically accompanies debt limit negotiations.
+url>
+```
 
 To open a bash terminal into the docker container:
 ```shell
-[~/summarizer-server] $ docker exec -it <container_name> bash
+[~/workspace/summarizer-server] $ docker exec -it summarizer_server bash
 ```
 
 Now the API is live at `localhost:5000/api`.
 
-To test a specific endpoint, consider using `curl`:
+To test a specific endpoint that is not covered by the REPL, consider using `curl`:
 ```shell
-curl -i -H "Content-Type: application/json" -X POST -d '{"text":"Newspapers are published in many languages. They may be dailies, published every day, or weeklies, published each week. Printed on newsprint, newspapers contain news and views on varied topics. The news published may be on politics, economy, society, business, science, sports and entertainment from around the world. Newspaper publishers hire journalists as reporters and correspondents to write for them. Editors work with a team at newspaper offices to edit stories before they are published in the papers."}' http://localhost:5000/api/summarize
+curl -i -H "Content-Type: application/json" ... http://localhost:5000/api/summarize
 ```
+
