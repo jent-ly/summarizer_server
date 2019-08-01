@@ -23,6 +23,11 @@ server_location = DEFAULT_SERVER_LOCATION
 signal.signal(signal.SIGINT, sigint_handler)
 
 
+def print_summary(summary):
+    for sentence in summary:
+        print(sentence)
+
+
 def handle_commands(command, response):
     global output_type
     global server_location
@@ -82,7 +87,7 @@ if __name__ == "__main__":
         if output_type == OutputType.SUMMARY:
             api_endpoint = f"{server_location}/api/summarize"
             response = requests.post(api_endpoint, json={"html": html})
-            print(response.content)
+            print_summary(json.loads(response.content))
         else:
             rank = text_rank.TextRank()
-            print(rank.process_html(html))
+            print(rank.process_html(html).text)

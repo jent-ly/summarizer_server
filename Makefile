@@ -4,7 +4,7 @@ build:
 	docker-compose build
 
 run: build
-	docker-compose up
+	DEBUG=true docker-compose up
 
 install:
 	pip3.7 install -r requirements.txt
