@@ -24,7 +24,7 @@ Use the REPL (Read-Eval-Print-Loop) to interactively send requests to the local 
 ```shell
 [~/workspace/summarizer-server] $ make repl
 python3.7 summarizer_server/repl.py
-url>
+url> :help
 
 usage:
     <url>                                Outputs the summary for the article pointed to by the url
