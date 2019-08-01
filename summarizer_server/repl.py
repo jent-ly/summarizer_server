@@ -17,7 +17,9 @@ def sigint_handler(signal, frame):
     exit(0)
 
 
+DEFAULT_SERVER_LOCATION = "http://localhost:5000"
 output_type = OutputType.SUMMARY
+server_location = DEFAULT_SERVER_LOCATION
 signal.signal(signal.SIGINT, sigint_handler)
 
 
@@ -28,6 +30,7 @@ def print_summary(summary):
 
 def handle_commands(command, response):
     global output_type
+    global server_location
     if command == ":exit" or command == ":quit" or command == ":q":
         sys.exit()
     elif command.startswith(":set"):
@@ -35,6 +38,12 @@ def handle_commands(command, response):
         set_param = tokens[1]
         if set_param == "output":
             output_type = OutputType[tokens[2].upper()]
+        elif set_param == "server":
+            # no argument means go back to localhost
+            if len(tokens) == 2:
+                server_location = DEFAULT_SERVER_LOCATION
+                return
+            server_location = tokens[2]
     elif command.startswith(":debug"):
         if not response:
             print("nothing to debug")
@@ -49,6 +58,7 @@ usage:
     <url>                                Outputs the summary for the article pointed to by the url
     :set <key> <value>                   Changes the configuration of the summarizer:
         output [ summary | text ]         - Sets the output type of the REPL
+        server [http[s]://<addr>[:port]]  - Sets the location of the backend
     :debug                               Outputs debug logs for the last sent url
     :[exit | quit | q]                   Exits the REPL
         """
@@ -75,9 +85,8 @@ if __name__ == "__main__":
         html = requests.get(url).text
 
         if output_type == OutputType.SUMMARY:
-            response = requests.post(
-                "http://localhost:5000/api/summarize", json={"html": html}
-            )
+            api_endpoint = f"{server_location}/api/summarize"
+            response = requests.post(api_endpoint, json={"html": html})
             print_summary(json.loads(response.content))
         else:
             rank = text_rank.TextRank()
