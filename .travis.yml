@@ -38,6 +38,6 @@ jobs:
       script:
         # Docker build and push
         - docker-compose build
-        - docker tag summarizer_server:latest gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis
+        - docker tag summarizer_server:latest gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis-$TRAVIS_COMMIT
         - gcloud docker -- push gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis
       
