@@ -33,11 +33,15 @@ jobs:
         - source $HOME/google-cloud-sdk/path.bash.inc
         - gcloud version
         # Auth flow
+        # GCLOUD_KEY is the base64 encoded version of the JSON key created from
+        #   the google cloud dev console for the account of GCLOUD_EMAIL
+        # GCLOUD_EMAIL is the email address of the service account that can push
+        #   to google container registry
         - echo $GCLOUD_KEY | base64 --decode > $HOME/gcloud-service-key.json
         - gcloud auth activate-service-account $GCLOUD_EMAIL --key-file $HOME/gcloud-service-key.json
       script:
         # Docker build and push
         - docker-compose build
         - docker tag summarizer_server:latest gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis-$TRAVIS_COMMIT
-        - gcloud docker -- push gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis
+        - gcloud docker -- push gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis-$TRAVIS_COMMIT
       
