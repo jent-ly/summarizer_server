@@ -9,7 +9,37 @@ services:
       dockerfile: ./docker/Dockerfile
     ports:
       - "${PORT:-5000}:${PORT:-5000}"
+    volumes:
+      - .:/server
     network_mode: "bridge"
     environment: # forward these from shell to the container at runtime
       - DEBUG
       - PORT
+      - POSTGRES_USER=postgres
+      - POSTGRES_PW=postgres
+      - POSTGRES_URL=postgres
+      - POSTGRES_DB=postgres
+    links:
+      - postgres
+    depends_on:
+      - postgres
+  
+  postgres:
+    image: postgres:12.0
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+      - ./summarizer_server/sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    restart: always
+    network_mode: "bridge"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PW=postgres
+      - POSTGRES_URL=postgres
+      - POSTGRES_DB=postgres
+
+volumes:
+  postgres_data:
+  sql:

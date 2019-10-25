@@ -4,9 +4,10 @@ import os
 import sys
 
 from flask import Flask, abort, request
+from flask_migrate import Migrate
 from settings import Settings
-from models import database, Feedback, User
-from user_service import UserService
+from models import database, Feedback, Account
+from account_service import AccountService
 from feedback_service import FeedbackService
 from text_rank import TextRank
 
@@ -18,7 +19,7 @@ app = Flask(__name__)
 app.config.from_object(Settings)
 database.init_app(app)
 
-userservice = UserService()
+accountservice = AccountService()
 feedbackservice = FeedbackService()
 textrank = TextRank()
 
@@ -67,12 +68,12 @@ def submit_feedback():
 
     # check if user wishes to be anonymous
     if email != "" and gaia != "":
-        user = userservice.get_or_create(email)
+        account = accountservice.get_or_create(email)
     else:
-        user = userservice.get_anonymous()
+        account = accountservice.get_anonymous()
 
     feedback = feedbackservice.submit(
-        url, score, request_payload.get("description", ""), user.id
+        url, score, request_payload.get("description", ""), account.id
     )
 
     response = {
@@ -102,10 +103,10 @@ def view_feedback():
 @app.route("/api/users/view", methods=["GET"])
 def view_users():
     # TODO: consider pagination
-    all_users = userservice.get_all()
+    all_accounts = accountservice.get_all()
     response = {
         "message": "Successfully got users",
-        "users": userservice.serialize_multiple(all_users),
+        "users": accountservice.serialize_multiple(all_accounts),
         "success": True,
     }
     return json.dumps(response)
@@ -133,5 +134,6 @@ def configure_logger(debug):
 if __name__ == "__main__":
     configure_logger(debug)
     with app.app_context():
-        database.create_all()
+        # initialize database migration management
+        migrate = Migrate(app, database)
     app.run(host="0.0.0.0", debug=debug, port=int(os.environ.get("PORT", 5000)))

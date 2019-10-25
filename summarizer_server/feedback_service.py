@@ -1,4 +1,4 @@
-from models import database, Feedback, User
+from models import database, Feedback, Account
 from serializers import FeedbackSchema
 
 
@@ -13,9 +13,9 @@ class FeedbackService:
     def serialize_multiple(self, feedback_multiple):
         return self.feedback_multiple.dump(feedback_multiple)
 
-    def submit(self, url, score, description, user_id):
+    def submit(self, url, score, description, account_id):
         feedback = Feedback(
-            url=url, score=score, description=description, user_id=user_id
+            url=url, score=score, description=description, account_id=account_id
         )
         database.session.add(feedback)
         database.session.commit()
