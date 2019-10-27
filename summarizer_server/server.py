@@ -5,6 +5,7 @@ import sys
 
 from flask import Flask, abort, request
 from flask_migrate import Migrate
+from sqlalchemy import create_engine
 from settings import Settings
 from models import database, Feedback, Account
 from account_service import AccountService
@@ -18,6 +19,9 @@ log = logging.getLogger("summarizer_server")
 app = Flask(__name__)
 app.config.from_object(Settings)
 database.init_app(app)
+
+engine = create_engine(Settings.SQLALCHEMY_DATABASE_URI)
+database.metadata.create_all(engine)
 
 accountservice = AccountService()
 feedbackservice = FeedbackService()
