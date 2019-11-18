@@ -11,6 +11,8 @@ services:
       - DEBUG
       - PORT
       - JOBLIB_MULTIPROCESSING=0 # this removes a uwsgi warning
+    volumes:
+      - "/var/log/docker:/var/log/"
     command: [
       "uwsgi",
       "--thunder-lock",
@@ -21,9 +23,11 @@ services:
       "--master",
       "--callable", "app",
       "--processes", "2",
+      "--logto", "/var/log/api.log",
     ]
   nginx:
     image: nginx:1.17
+    container_name: summarizer_nginx
     ports:
       - "80:80"
       - "443:443"
