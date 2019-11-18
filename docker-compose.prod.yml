@@ -23,7 +23,7 @@ services:
       "--master",
       "--callable", "app",
       "--processes", "2",
-      "--logto", "/var/log/uwsgi.log",
+      "--logto", "/var/log/api.log",
     ]
   nginx:
     image: nginx:1.17
