@@ -12,17 +12,17 @@ Clone the repository:
 
 Our development environment is hosted in a Docker development container. We support `make` commands, to build the container and its dependencies:
 ```shell
-[~/workspace/summarizer-server] $ make build
+[~/workspace/summarizer_server] $ make build
 ```
 
 Run the following command to start the server and attach it to the current terminal. The server by default is hosted on port 5000 with `debug mode: on`
 ```shell
-[~/workspace/summarizer-server] $ make run
+[~/workspace/summarizer_server] $ make run
 ```
 
 Use the REPL (Read-Eval-Print-Loop) to interactively send requests to the local and production server. By default the REPL accepts a link to an article and will return the summary of the article produced by the local server. To view a complete set of REPL configurations, type `:help` in the REPL instance.
 ```shell
-[~/workspace/summarizer-server] $ make repl
+[~/workspace/summarizer_server] $ make repl
 python3.7 summarizer_server/repl.py
 url> :help
 
@@ -46,13 +46,32 @@ url>
 
 To open a bash terminal into the docker container:
 ```shell
-[~/workspace/summarizer-server] $ docker exec -it summarizer_server bash
+[~/workspace/summarizer_server] $ docker exec -it summarizer_server bash
 ```
 
 Now the API is live at `localhost:5000/api`.
 
 To test a specific endpoint that is not covered by the REPL, consider using `curl`:
 ```shell
-curl -i -H "Content-Type: application/json" ... http://localhost:5000/api/summarize
+[~/workspace/summarizer_server] $ curl -i -H "Content-Type: application/json" ... http://localhost:5000/api/summarize
 ```
 
+### Setting up the database
+
+Create a directory for a mounted volume:
+```shell
+[~/workspace/summarizer_server] $ mkdir postgres_data
+```
+
+Set environment variables:
+```shell
+[~/workspace/summarizer_server] $ POSTGRES_USER=postgres
+[~/workspace/summarizer_server] $ POSTGRES_PW=postgres
+[~/workspace/summarizer_server] $ POSTGRES_URL=postgres
+[~/workspace/summarizer_server] $ POSTGRES_DB=postgres
+```
+
+To POST data to the database, consider using `curl`:
+```shell
+[~/workspace/summarizer_server] $ curl -i --request POST -H "Content-Type: application/json" -d '{"url": "www.fake.com", "score": "1"}' http://localhost:5000/api/feedback/submit
+```

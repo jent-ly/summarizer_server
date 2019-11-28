@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 RUN apt-get update -y && \
-    apt-get install -y software-properties-common wget unzip libxml2-dev libxslt-dev && \
+    apt-get install -y software-properties-common wget unzip libxml2-dev libxslt-dev libpq-dev postgresql-client && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update -y && \
     apt-get install -y python3.7 python3.7-dev python3-pip
