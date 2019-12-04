@@ -3,3 +3,4 @@ docker-compose.override.yml
 **/*.swp
 **/*.pyc
 **/*.DS_Store
+postgres_data

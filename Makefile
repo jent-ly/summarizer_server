@@ -1,10 +1,10 @@
 all: run
 
 build:
-	docker-compose build
+	docker-compose -f docker-compose.yml build
 
 run: build
-	DEBUG=true docker-compose up
+	DEBUG=true docker-compose -f docker-compose.yml up
 
 install:
 	pip3.7 install -r requirements.txt
