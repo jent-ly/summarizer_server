@@ -10,11 +10,13 @@ services:
     environment: # forward these from shell to the container at runtime
       - DEBUG
       - PORT
-      - JOBLIB_MULTIPROCESSING=0
+      - JOBLIB_MULTIPROCESSING=0 # this removes a uwsgi warning
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD
       - POSTGRES_URL=postgres
       - POSTGRES_DB=postgres
+    volumes:
+      - "/var/log/docker:/var/log/"
     links:
       - postgres
     depends_on:
