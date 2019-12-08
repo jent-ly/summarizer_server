@@ -43,10 +43,26 @@ def extract():
 def summarize():
     if not request.is_json:
         abort(400)
+
     request_payload = request.get_json()
-    top_sentences = textrank.summarize(
-        request_payload["html"], request_payload.get("percent_sentences")
-    )
+    percent_sentences = request_payload.get("percent_sentences")
+    top_sentences = []
+
+    if percent_sentences is None or percent_sentences > 100 or percent_sentences < 0:
+        percent_sentences = 15
+
+    if request_payload.get("text"):
+        top_sentences = textrank.summarize(
+            request_payload["title"],
+            request_payload["text"],
+            request_payload.get("lang"),
+            percent_sentences,
+        )
+    else:
+        top_sentences = textrank.summarize_from_html(
+            request_payload["html"], percent_sentences
+        )
+
     return json.dumps(top_sentences)
 
 
