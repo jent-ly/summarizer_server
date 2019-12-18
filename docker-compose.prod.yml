@@ -54,7 +54,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /var/data/postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     restart: always
     network_mode: "bridge"
     environment:
