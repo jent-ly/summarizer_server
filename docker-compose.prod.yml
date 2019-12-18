@@ -11,8 +11,16 @@ services:
       - DEBUG
       - PORT
       - JOBLIB_MULTIPROCESSING=0 # this removes a uwsgi warning
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD
+      - POSTGRES_URL=postgres
+      - POSTGRES_DB=postgres
     volumes:
       - "/var/log/docker:/var/log/"
+    links:
+      - postgres
+    depends_on:
+      - postgres
     command: [
       "uwsgi",
       "--thunder-lock",
@@ -40,3 +48,19 @@ services:
       - api
     depends_on:
       - api
+  postgres:
+    image: postgres:12.0
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    network_mode: "bridge"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB=postgres
+
+volumes:
+  postgres_data:
