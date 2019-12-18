@@ -1,7 +1,9 @@
 import logging
 import pickle
+import math
 import os
 import re
+import pdb
 
 import networkx as nx
 import nltk
@@ -48,23 +50,7 @@ class TextRank:
 
     # Implemented following:
     #     https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
-    def summarize(self, html, percent_sentences):
-        if (
-            percent_sentences is None
-            or percent_sentences > 100
-            or percent_sentences < 0
-        ):
-            percent_sentences = 15
-
-        article = self.process_html(html)
-
-        # remove title from the text, if it appears in the text
-        if article.text.startswith(article.title):
-            article.set_text(article.text[len(article.title) :])
-
-        sentences = nlp.split_sentences(article.text)
-        log.debug(article.text)
-
+    def evaluate_textrank_summary(self, sentences):
         # remove punctuations, numbers and special characters
         clean_sentences = pd.Series(sentences).str.replace("[^a-zA-Z]", " ")
         clean_sentences = [s.lower() for s in clean_sentences]
@@ -97,27 +83,65 @@ class TextRank:
         nx_graph = nx.from_numpy_array(sim_mat)
         textrank_scores = self.normalize_scores(nx.pagerank(nx_graph))
 
+        # return a dictionary of index to sentences and their scores
+        # ie. { 0: 0.145, 1: 0.105, 2: 0.127, 3: 0.123, 4: 0.120, 5: 0.154, 6: 0.101, 7: 0.125 }
+        return textrank_scores
+
+    def evaluate_newspaper_summary(self, title, text, sentences, language):
         # get newspaper's nlp scores
         # https://github.com/codelucas/newspaper/blob/master/newspaper/article.py#L372
-        nlp.load_stopwords(article.config.get_language())
+        nlp.load_stopwords(language)
 
         # call to: nlp.summarize(title=article.title, text=article.text, max_sents=max_sents)
         # https://github.com/codelucas/newspaper/blob/master/newspaper/nlp.py#L40
-        title_words = nlp.split_words(article.title)
-        most_frequent = nlp.keywords(article.text)
+        title_words = nlp.split_words(title)
+        most_frequent = nlp.keywords(text)
 
         nlp_scores = self.normalize_scores(
             nlp.score(sentences, title_words, most_frequent)
         )
 
+        # Return a dictionary of tuple<sentence index, setence text> to score
+        # ie. { (0, 'A new poll suggests that the Toronto Raptors...') : 0.144, ... }
+        return nlp_scores
+
+    def summarize_from_html(self, html, percent_sentences):
+        # Use newspaper3k's clean text extraction and parsing
+        article = self.process_html(html)
+        return self.summarize(
+            article.title,
+            article.text,
+            article.config.get_language(),
+            percent_sentences,
+        )
+
+    def summarize(self, title, text, language, percent_sentences):
+        # remove title from the text, if it appears in the text
+        if text.startswith(title):
+            text = text[len(title) :]
+
+        if not text:
+            return []
+
+        if not language:
+            language = "en"
+
+        text = text.lstrip()
+        sentences = tokenize.sent_tokenize(text)
+
+        textrank_scores = self.evaluate_textrank_summary(sentences)
+        newspaper_scores = self.evaluate_newspaper_summary(
+            title, text, sentences, language
+        )
+
         totalled_scores = Counter()
-        for key, value in nlp_scores.items():
+        for key, value in newspaper_scores.items():
             totalled_scores[key[0]] += value
 
         for key, value in textrank_scores.items():
             totalled_scores[key] += value
 
-        num_sentences = int(len(clean_sentences) * percent_sentences / 100)
+        num_sentences = int(math.ceil(len(sentences) * percent_sentences / 100))
         sentence_indices = list(
             map(lambda x: x[0], totalled_scores.most_common(num_sentences))
         )

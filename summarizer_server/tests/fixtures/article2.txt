@@ -1,0 +1,31 @@
+What’s inside the Barcode?
+
+Barcodes are everywhere, we encounter them on nearly every product that we see, have you ever wondered how it works?
+
+There are many types of Barcodes Code 39, Code 128, UPC, EAN… all of them works the same manner but has different design and decompiled by the barcode scanners in different ways.
+
+In this article, we’re gonna take an example of the EAN13 barcode.
+
+EAN stands for ( European Article Number) and 13 cause it contains 13 numbers and it has the following format:
+
+The above barcode when scanned it will generate the same text written below it “9780201379624”. The scanner emits red light, the sensor in it detects the reflected light and generates an analog signal with the varying voltage that represents the intensity (or lack of intensity) of the reflection. A converter changes the analog signal to a digital signal which is sent to the decoder.
+
+How does the decoder work? it has an algorithm to transform those digital signals to an ASCII text that is sent to the computer:
+
+What are the parts of the EAN13 barcodes:
+
+1- First and Last 3 Lines:
+
+As we can see in the above picture the first and the last 3 lines are 1 Black 1 White(which is the empty column) and 1 Black that means the black line represents a 1 in binary and the white line represents a 0. From those lines, the machine will determine the thickness of 1 and the thickness of the 0
+
+Line (We will see an example shortly).The first 3 bits are known as Left-Hand Guard Pattern and the Last 3 bits are known as the Right-Hand Guard Pattern.
+
+2- The Middle lines:
+
+it’s called Center Guard Pattern which is composed of 5 bits 01010. This is a fixed pattern that always presents in the barcode. If the Scanner doesn’t find it, it will not acknowledge the EAN13 barcode.
+
+3- The check Digit number:
+
+it’s the last number on an EAN13 barcode, this number will permit checking if the barcode is eligible or not, it’s another form of error checking let’s see how it’s calculated:
+
+Our barcode is composed of those numbers: 9780201379624 to examine how it works let's take the first 12 digits of the barcode 978020137962 we start by the last one and skip 1 number and add the next number : (2+9+3+0+0+7) multiply by 3 = 63 then we add the rest from the beginning and skip one number 63 +(9+8+2+1+7+6) =96, Now we substruct it from the next number from the result multiple of 10 which it 100–96 =4 and that’s it :)
