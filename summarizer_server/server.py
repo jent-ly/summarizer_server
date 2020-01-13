@@ -1,8 +1,13 @@
+import datetime
+import hashlib
 import json
 import logging
 import os
 import sys
+import time
+from urllib.parse import urljoin
 
+import requests
 from flask import Flask, abort, request
 from flask_migrate import Migrate
 from sqlalchemy import create_engine
@@ -13,6 +18,8 @@ from feedback_service import FeedbackService
 from text_rank import TextRank
 
 debug = os.environ.get("DEBUG", "false").lower() == "true"
+ENV = os.environ.get("ENV", "dev")
+DD_API_URL = "https://api.datadoghq.com/api/v1/"
 
 log = logging.getLogger("summarizer_server")
 
@@ -67,6 +74,9 @@ def summarize():
         top_sentences = textrank.summarize_from_html(
             request_payload["html"], percent_sentences
         )
+
+    if ENV == "prod":
+        send_metric_summarize(request_payload.get("email"))
 
     return json.dumps(top_sentences)
 
@@ -149,6 +159,30 @@ def configure_logger(debug):
 
     app.logger.handlers = []
     app.logger.propagate = True
+
+
+def send_metric_summarize(email):
+    dd_api_key = os.environ.get("DD_API_KEY", "")
+    host = os.environ.get("HOST", "")
+    userhash = "unknown"
+    if email:
+        userhash = hashlib.sha256(bytes(email, "UTF")).hexdigest()
+
+    requests.post(
+        urljoin(DD_API_URL, "series"),
+        params={"api_key": dd_api_key},
+        json={
+            "series": [
+                {
+                    "host": host,
+                    "metric": "app.jently.api.requests.summarize",
+                    "points": [[time.mktime(datetime.datetime.now().timetuple()), 1,]],
+                    "type": "gauge",
+                    "tags": f"userhash:{userhash}",
+                }
+            ]
+        },
+    )
 
 
 if __name__ == "__main__":
