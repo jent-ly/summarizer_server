@@ -11,12 +11,13 @@ def get_env_variable(name):
 
 # TODO: separate dev and prod settings
 class Settings:
-    # Default port for PostgreSQL is 5432
-    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
-        dbuser=get_env_variable("POSTGRES_USER"),
-        dbpass=get_env_variable("POSTGRES_PASSWORD"),
-        dbhost=get_env_variable("POSTGRES_URL"),
-        dbname=get_env_variable("POSTGRES_DB"),
-    )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    DEBUG = True
+    def __init__(self):
+        # Default port for PostgreSQL is 5432
+        self.SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
+            dbuser=get_env_variable("POSTGRES_USER"),
+            dbpass=get_env_variable("POSTGRES_PASSWORD"),
+            dbhost=get_env_variable("POSTGRES_URL"),
+            dbname=get_env_variable("POSTGRES_DB"),
+        )
+        self.SQLALCHEMY_TRACK_MODIFICATIONS = False
+        self.DEBUG = True

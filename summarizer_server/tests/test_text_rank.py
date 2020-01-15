@@ -1,10 +1,10 @@
 import unittest
-import summarizer_server.tests.test_utils as utils
+import tests.utils as utils
 import math
 import pdb
 
 from nltk import tokenize
-from summarizer_server.text_rank import TextRank
+from text_rank import TextRank
 
 
 class TestTextRank(unittest.TestCase):

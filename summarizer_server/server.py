@@ -24,20 +24,19 @@ DD_API_URL = "https://api.datadoghq.com/api/v1/"
 log = logging.getLogger("summarizer_server")
 
 app = Flask(__name__)
-app.config.from_object(Settings)
+textrank = TextRank()
+textrank.setup()
+
+# db setup
+settings = Settings()
+app.config.from_object(settings)
 database.init_app(app)
 
-engine = create_engine(Settings.SQLALCHEMY_DATABASE_URI)
+engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)
 database.metadata.create_all(engine)
 
 accountservice = AccountService()
 feedbackservice = FeedbackService()
-textrank = TextRank()
-
-
-@app.before_first_request
-def before_first_request():
-    textrank.setup()
 
 
 @app.route("/api/")
@@ -176,7 +175,7 @@ def send_metric_summarize(email):
                 {
                     "host": host,
                     "metric": "app.jently.api.requests.summarize",
-                    "points": [[time.mktime(datetime.datetime.now().timetuple()), 1,]],
+                    "points": [[time.mktime(datetime.datetime.now().timetuple()), 1]],
                     "type": "gauge",
                     "tags": f"userhash:{userhash}",
                 }
