@@ -54,7 +54,7 @@ def summarize():
     top_sentences = []
 
     if percent_sentences is None or percent_sentences > 100 or percent_sentences < 0:
-        percent_sentences = 15
+        percent_sentences = 20
 
     if request_payload.get("text"):
         top_sentences = textrank.summarize(
