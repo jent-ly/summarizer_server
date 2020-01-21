@@ -33,18 +33,26 @@ def before_first_request():
     textrank.setup()
 
 
+@app.route("/v1/")
+def index():
+    return "Summarizer API v1"
+
+
+# deprecated
 @app.route("/api/")
 def index():
     return "Summarizer API"
 
 
-@app.route("/api/extract", methods=["POST"])
+@app.route("/api/extract", methods=["POST"])  # deprecated
+@app.route("/v1/extract", methods=["POST"])
 def extract():
     # TODO: call into summary algorithm
     return "Extractive summary endpoint"
 
 
-@app.route("/api/summarize", methods=["POST"])
+@app.route("/api/summarize", methods=["POST"])  # deprecated
+@app.route("/v1/summarize", methods=["POST"])
 def summarize():
     if not request.is_json:
         abort(400)
@@ -71,7 +79,8 @@ def summarize():
     return json.dumps(top_sentences)
 
 
-@app.route("/api/feedback/submit", methods=["POST"])
+@app.route("/api/feedback/submit", methods=["POST"])  # deprecated
+@app.route("/v1/feedback/submit", methods=["POST"])
 def submit_feedback():
     if not request.is_json:
         abort(400)
@@ -106,7 +115,8 @@ def submit_feedback():
 
 # TODO: add feedback deletion
 # TODO: make certain routes internal only
-@app.route("/api/feedback/view", methods=["GET"])
+@app.route("/api/feedback/view", methods=["GET"])  # deprecated
+@app.route("/v1/feedback/view", methods=["GET"])
 def view_feedback():
     # TODO: consider pagination
     all_feedback = feedbackservice.get_all()
@@ -120,7 +130,8 @@ def view_feedback():
 
 # TODO: add user deletion and creation
 # TODO: make certain routes internal only
-@app.route("/api/users/view", methods=["GET"])
+@app.route("/api/users/view", methods=["GET"])  # deprecated
+@app.route("/v1/users/view", methods=["GET"])
 def view_users():
     # TODO: consider pagination
     all_accounts = accountservice.get_all()
