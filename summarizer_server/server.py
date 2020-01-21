@@ -44,12 +44,6 @@ def index():
     return "Summarizer API v1"
 
 
-# deprecated
-@app.route("/api/")
-def index():
-    return "Summarizer API"
-
-
 @app.route("/api/extract", methods=["POST"])  # deprecated
 @app.route("/v1/extract", methods=["POST"])
 def extract():
