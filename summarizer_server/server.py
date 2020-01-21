@@ -75,7 +75,7 @@ def summarize():
         )
 
     if ENV == "prod":
-        send_metric_summarize(request_payload.get("email"))
+        send_metric_summarize()
 
     return json.dumps(top_sentences)
 
@@ -160,12 +160,9 @@ def configure_logger(debug):
     app.logger.propagate = True
 
 
-def send_metric_summarize(email):
+def send_metric_summarize():
     dd_api_key = os.environ.get("DD_API_KEY", "")
     host = os.environ.get("HOST", "")
-    userhash = "unknown"
-    if email:
-        userhash = hashlib.sha256(bytes(email, "UTF")).hexdigest()
 
     requests.post(
         urljoin(DD_API_URL, "series"),
@@ -177,7 +174,6 @@ def send_metric_summarize(email):
                     "metric": "app.jently.api.requests.summarize",
                     "points": [[time.mktime(datetime.datetime.now().timetuple()), 1]],
                     "type": "gauge",
-                    "tags": f"userhash:{userhash}",
                 }
             ]
         },
