@@ -97,6 +97,8 @@ def submit_feedback():
 
     # check if user wishes to be anonymous
     if email != "" and gaia != "":
+        # TODO: fix: doing a read and a write seems to cause some kind of timeout, clients that reach this code get error responses
+        # consider sending the submit feedback request as fire-and-forget, since client doesn't need its response
         account = accountservice.get_or_create(email)
     else:
         account = accountservice.get_anonymous()
