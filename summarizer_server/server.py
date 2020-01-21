@@ -1,8 +1,13 @@
+import datetime
+import hashlib
 import json
 import logging
 import os
 import sys
+import time
+from urllib.parse import urljoin
 
+import requests
 from flask import Flask, abort, request
 from flask_migrate import Migrate
 from sqlalchemy import create_engine
@@ -13,24 +18,25 @@ from feedback_service import FeedbackService
 from text_rank import TextRank
 
 debug = os.environ.get("DEBUG", "false").lower() == "true"
+ENV = os.environ.get("ENV", "dev")
+DD_API_URL = "https://api.datadoghq.com/api/v1/"
 
 log = logging.getLogger("summarizer_server")
 
 app = Flask(__name__)
-app.config.from_object(Settings)
+textrank = TextRank()
+textrank.setup()
+
+# db setup
+settings = Settings()
+app.config.from_object(settings)
 database.init_app(app)
 
-engine = create_engine(Settings.SQLALCHEMY_DATABASE_URI)
+engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)
 database.metadata.create_all(engine)
 
 accountservice = AccountService()
 feedbackservice = FeedbackService()
-textrank = TextRank()
-
-
-@app.before_first_request
-def before_first_request():
-    textrank.setup()
 
 
 @app.route("/v1/")
@@ -75,6 +81,9 @@ def summarize():
         top_sentences = textrank.summarize_from_html(
             request_payload["html"], percent_sentences
         )
+
+    if ENV == "prod":
+        send_metric_summarize()
 
     return json.dumps(top_sentences)
 
@@ -160,6 +169,26 @@ def configure_logger(debug):
 
     app.logger.handlers = []
     app.logger.propagate = True
+
+
+def send_metric_summarize():
+    dd_api_key = os.environ.get("DD_API_KEY", "")
+    host = os.environ.get("HOST", "")
+
+    requests.post(
+        urljoin(DD_API_URL, "series"),
+        params={"api_key": dd_api_key},
+        json={
+            "series": [
+                {
+                    "host": host,
+                    "metric": "app.jently.api.requests.summarize",
+                    "points": [[time.mktime(datetime.datetime.now().timetuple()), 1]],
+                    "type": "gauge",
+                }
+            ]
+        },
+    )
 
 
 if __name__ == "__main__":
