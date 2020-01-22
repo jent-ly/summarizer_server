@@ -25,5 +25,5 @@ gcloud compute scp docker-compose.prod.yml jently-docker-instance-2:~
 echo "Step 3: bring up server"
 
 gcloud beta compute --project "alpine-gasket-242504" ssh --zone "us-central1-a" "jently-docker-instance-2" \
---command "ENV=prod DD_API_KEY=$DD_API_KEY HOST=$$HOST POSTGRES_PASSWORD=$PG_PASSWORD \
+--command "ENV=prod DD_API_KEY=$DD_API_KEY HOST=\$HOSTNAME POSTGRES_PASSWORD=$PG_PASSWORD \
   docker-compose -f docker-compose.prod.yml up -d"
