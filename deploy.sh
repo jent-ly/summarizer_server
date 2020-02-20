@@ -18,9 +18,10 @@ gcloud beta compute --project "alpine-gasket-242504" ssh --zone "us-central1-a" 
 gcloud docker -- tag $IMAGE_REPO:$DEPLOY_SHA $IMAGE_REPO:latest && \
 docker-compose -f docker-compose.prod.yml down"
 
-echo "Step 2: copy docker-compose"
+echo "Step 2: copy files"
 
 gcloud compute scp docker-compose.prod.yml jently-docker-instance-2:~
+gcloud compute scp summarizer_server/nginx.conf summarizer_server/nginx_default.conf jently-docker-instance-2:~/summarizer_server/
 
 echo "Step 3: bring up server"
 

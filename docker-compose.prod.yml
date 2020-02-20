@@ -18,8 +18,6 @@ services:
       - ENV
       - DD_API_KEY
       - HOST
-    volumes:
-      - "/var/log/docker:/var/log/"
     links:
       - postgres
     depends_on:
@@ -34,8 +32,9 @@ services:
       "--master",
       "--callable", "app",
       "--processes", "2",
-      "--logto", "/var/log/api.log",
     ]
+    labels:
+      com.datadoghq.ad.logs: '[{"source": "flask", "service": "backend"}]'
   nginx:
     image: nginx:1.17
     container_name: summarizer_nginx
@@ -43,7 +42,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - "./summarizer_server/nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+      - "./summarizer_server/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "./summarizer_server/nginx_default.conf:/etc/nginx/conf.d/default.conf:ro"
       - "./summarizer_server/nginx.key:/etc/nginx/ssl/nginx.key:ro"
       - "./summarizer_server/nginx.crt:/etc/nginx/ssl/nginx.crt:ro"
     network_mode: "bridge"
@@ -51,6 +51,8 @@ services:
       - api
     depends_on:
       - api
+    labels:
+      com.datadoghq.ad.logs: '[{"source": "nginx", "service": "backend"}]'
   postgres:
     image: postgres:12.0
     container_name: postgres
@@ -64,6 +66,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD
       - POSTGRES_DB=postgres
+    labels:
+      com.datadoghq.ad.logs: '[{"source": "postgres", "service": "backend"}]'
 
 volumes:
   postgres_data:
