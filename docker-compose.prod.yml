@@ -15,9 +15,8 @@ services:
       - POSTGRES_PASSWORD
       - POSTGRES_URL=postgres
       - POSTGRES_DB=postgres
-      - ENV
-      - DD_API_KEY
-      - HOST
+    volumes:
+      - "/var/log/docker:/var/log/"
     links:
       - postgres
     depends_on:

@@ -3,11 +3,10 @@ set -euo pipefail
 
 IMAGE_REPO="gcr.io/alpine-gasket-242504/summarizer-server"
 PG_PASSWORD=${1:-}
-DD_API_KEY=${2:-}
-DEPLOY_SHA=${3:-}
+DEPLOY_SHA=${2:-}
 
-if [ -z "$PG_PASSWORD" ] || [ -z "$DD_API_KEY" ] || [ -z "$DEPLOY_SHA" ]; then
-  echo "Usage: ./deploy.sh <postgres_password> <datadog_api_key> <travis_sha>"
+if [ -z "$PG_PASSWORD" ] || [ -z "$DEPLOY_SHA" ]; then
+  echo "Usage: ./deploy.sh <postgres_password> <travis_sha>"
   exit 1
 fi
 
@@ -26,5 +25,4 @@ gcloud compute scp summarizer_server/nginx.conf summarizer_server/nginx_default.
 echo "Step 3: bring up server"
 
 gcloud beta compute --project "alpine-gasket-242504" ssh --zone "us-central1-a" "jently-docker-instance-2" \
---command "ENV=prod DD_API_KEY=$DD_API_KEY HOST=\$HOSTNAME POSTGRES_PASSWORD=$PG_PASSWORD \
-  docker-compose -f docker-compose.prod.yml up -d"
+--command "POSTGRES_PASSWORD=$PG_PASSWORD docker-compose -f docker-compose.prod.yml up -d"
