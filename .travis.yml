@@ -2,8 +2,6 @@ dist: xenial   # required for Python >= 3.7
 
 stages:
   - test
-  - name: build-push
-    if: branch = master AND type = push
 
 jobs:
   include:
@@ -17,31 +15,3 @@ jobs:
       script:
         - black --check .
         - make test
-    # Most of this job is taken from http://thylong.com/ci/2016/deploying-from-travis-to-gce/
-    - stage: build-push
-      cache:
-      directories:
-        - "$HOME/google-cloud-sdk/"
-      services: docker
-      install:
-        - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then
-            rm -rf $HOME/google-cloud-sdk;
-            curl -so $HOME/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-259.0.0-linux-x86_64.tar.gz;
-            tar -xzf $HOME/google-cloud-sdk.tar.gz -C $HOME;
-          fi
-        # Add gcloud to $PATH
-        - source $HOME/google-cloud-sdk/path.bash.inc
-        - gcloud version
-        # Auth flow
-        # GCLOUD_KEY is the base64 encoded version of the JSON key created from
-        #   the google cloud dev console for the account of GCLOUD_EMAIL
-        # GCLOUD_EMAIL is the email address of the service account that can push
-        #   to google container registry
-        - echo $GCLOUD_KEY | base64 --decode > $HOME/gcloud-service-key.json
-        - gcloud auth activate-service-account $GCLOUD_EMAIL --key-file $HOME/gcloud-service-key.json
-      script:
-        # Docker build and push
-        - docker-compose build
-        - docker tag summarizer_server:latest gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis-$TRAVIS_COMMIT
-        - gcloud docker -- push gcr.io/$CLOUDSDK_CORE_PROJECT/$CLOUDSDK_CORE_REPO:travis-$TRAVIS_COMMIT
-      
