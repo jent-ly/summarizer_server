@@ -18,8 +18,6 @@ from feedback_service import FeedbackService
 from text_rank import TextRank
 
 debug = os.environ.get("DEBUG", "false").lower() == "true"
-ENV = os.environ.get("ENV", "dev")
-DD_API_URL = "https://api.datadoghq.com/api/v1/"
 
 log = logging.getLogger("summarizer_server")
 
@@ -75,9 +73,6 @@ def summarize():
         top_sentences = textrank.summarize_from_html(
             request_payload["html"], percent_sentences
         )
-
-    if ENV == "prod":
-        send_metric_summarize()
 
     return json.dumps(top_sentences)
 
@@ -163,26 +158,6 @@ def configure_logger(debug):
 
     app.logger.handlers = []
     app.logger.propagate = True
-
-
-def send_metric_summarize():
-    dd_api_key = os.environ.get("DD_API_KEY", "")
-    host = os.environ.get("HOST", "")
-
-    requests.post(
-        urljoin(DD_API_URL, "series"),
-        params={"api_key": dd_api_key},
-        json={
-            "series": [
-                {
-                    "host": host,
-                    "metric": "app.jently.api.requests.summarize",
-                    "points": [[time.mktime(datetime.datetime.now().timetuple()), 1]],
-                    "type": "gauge",
-                }
-            ]
-        },
-    )
 
 
 if __name__ == "__main__":
